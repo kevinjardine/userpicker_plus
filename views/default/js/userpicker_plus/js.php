@@ -8,8 +8,8 @@ elgg.provide('elgg.userpicker_plus');
 elgg.userpicker_plus.init = function() {
 	
 	// binding group select action
-	$('.userpicker-plus-group-picker-class').change(elgg.userpicker_plus.groupSelectResponse);
-	$('.userpicker-plus-remove-all').click(elgg.userpicker_plus.removeAll);
+	$('.userpicker-plus-group-picker-class').live('change',elgg.userpicker_plus.groupSelectResponse);
+	$('.userpicker-plus-remove-all').live('click',elgg.userpicker_plus.removeAll);
 	if (elgg.userpicker_plus.size(elgg.userpicker.userList)) {
 		$(".userpicker-plus-remove-all-wrapper").show();
 	} else {
@@ -28,8 +28,15 @@ elgg.userpicker_plus.init = function() {
 elgg.userpicker_plus.groupSelectResponse = function(event) {
 	
 	var groupGuid = $(this).val();
-	elgg.getJSON('userpicker_plus/group/'+groupGuid, {success: elgg.userpicker_plus.addGroup});
-	$("#"+$(this).attr("id")+" option[value='"+groupGuid+"']").remove();
+	if (groupGuid == '__RESTORE__') {
+		$('#userpicker-plus-groups-wrapper').load(elgg.get_site_url()+'userpicker_plus/group_picker');
+	} else {
+		elgg.getJSON('userpicker_plus/group/'+groupGuid, {success: elgg.userpicker_plus.addGroup});
+		$("#"+$(this).attr("id")+" option[value='"+groupGuid+"']").remove();
+		if ($("#"+$(this).attr("id")+" option[value='__RESTORE__']").length == 0) {
+			$(this).append('<option value="__RESTORE__">(restore all groups to this list)</option>');
+		}
+	}
 	
 	//$(this).removeOption(groupGuid);
 	//event.preventDefault();
@@ -57,6 +64,7 @@ elgg.userpicker_plus.removeAll = function() {
 	$(".elgg-user-picker-list").children().remove();
 	elgg.userpicker.userList = {};
 	$(".userpicker-plus-remove-all-wrapper").hide();
+	$('#userpicker-plus-groups-wrapper').load(elgg.get_site_url()+'userpicker_plus/group_picker');
 }
 
 elgg.userpicker_plus.size = function(obj) {

@@ -2,6 +2,7 @@
 elgg_load_js('elgg.userpicker_plus');
 echo elgg_view('input/userpicker',array('value'=>$vars['value']));
 if (elgg_is_logged_in()) {
+	echo '<div id ="userpicker-plus-groups-wrapper">';
 	echo elgg_view('input/groups_for_user',
 		array(
 			'name'=>'group_picker', 
@@ -10,6 +11,7 @@ if (elgg_is_logged_in()) {
 			'user'=>elgg_get_logged_in_user_entity(),
 		)
 	);
+	echo '</div>';
 }
 ?>
 <div class="userpicker-plus-remove-all-wrapper">
